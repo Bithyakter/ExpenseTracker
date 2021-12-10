@@ -10,14 +10,18 @@
 ```
   
 ## Technologies
-Project is created with:
-* C# Programming Language.
-* ASP.NET Core MVC.
-* ASP.NET Core Framework 5.
-* MS SQL Server.
-* Code-First Approach of system development.
-* Bootstrap 5.
+```
+ Project is created with:
+ * C# Programming Language.
+ * ASP.NET Core MVC.
+ * ASP.NET Core Framework 5.
+ * MS SQL Server.
+ * Code-First Approach of system development.
+ * Bootstrap 5.
+```
 
 ## Requirement
-  1. Visual Studio 2019.
-  2. SQL Server
+```
+   1. Visual Studio 2019.
+   2. SQL Server
+```
