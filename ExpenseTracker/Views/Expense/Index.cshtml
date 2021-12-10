@@ -1,0 +1,163 @@
+﻿@model IEnumerable<ExpenseTracker.Models.Expense>
+@{
+    ViewData["Title"] = "Expense Tracker System";
+}
+<link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<script src="https://use.fontawesome.com/c7a575b4de.js"></script>
+
+<h2>Expense Tracker System</h2>
+<br />
+
+<div>
+    <div style="float:left">
+        <button class="fa fa-plus  btn btn-primary" onclick="AddEditExpenses(0)">Add Expense</button>
+        <button class="fa fa-file-pdf-o  btn btn-success" onclick="ReportExpense()">Expense Report</button>
+    </div>
+    <div style="float:right; width:40%;">
+        <form asp-controller="Expense" asp-action="Index" class="form-group">
+            <div class="form-group d-inline-block col-sm-6">
+                <input class="form-control" type="text" name="SearchString" placeholder="Search">
+            </div>
+            <div class="form-group d-inline-block">
+                <button type="submit" class="btn btn-default btn-info">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="table-responsive">
+    <div class="box box-primary">
+        <div class="box-body">
+            <table border="1" class="table table-bordered table-hover table-striped table-condensed">
+                <thead class="table-info">
+                    <tr class="text-center">
+                        @*<th>@Html.DisplayNameFor(model => model.ExpenseID)</th>*@
+                        <th>@Html.DisplayNameFor(model => model.ExpenseType)</th>
+                        <th>@Html.DisplayNameFor(model => model.Category)</th>
+                        <th>@Html.DisplayNameFor(model => model.ExpenseDate)</th>
+                        <th>@Html.DisplayNameFor(model => model.Amount)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            @*<td>@Html.HiddenFor(modelItem => item.ExpenseID)</td>*@
+                            <td>@Html.DisplayFor(modelItem => item.ExpenseType)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Category)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ExpenseDate)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                            <td>
+                                <button class="fa fa-pencil btn btn-outline-success" onclick="AddEditExpenses(@item.ExpenseID)"></button>
+                                <button class="fa fa-trash-o btn btn-outline-danger" onclick="DeleteExpense(@item.ExpenseID)"></button>
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="expenseFormModel" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">×</a>
+                <h3 id="title" class="modal-title"></h3>
+            </div>
+            <div class="modal-body" id="expenseFormModelDiv">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="expenseReportModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">×</a>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body" id="expenseReportModalDiv">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var AddEditExpenses = function (expenseID) {
+        var url = "/Expense/AddEditExpenses?expenseID=" + expenseID;
+        if (expenseID > 0)
+            $('#title').html("");
+
+        $("#expenseFormModelDiv").load(url, function () {
+            $("#expenseFormModel").modal("show");
+
+        });
+
+        $('#expenseFormModel').on('shown.bs.modal', function () {
+
+            $('#calender-container .input-group.date').datepicker({
+                todayBtn: true,
+                calendarWeeks: true,
+                todayHighlight: true,
+                autoclose: true,
+                container: '#expenseFormModel modal-body'
+            });
+
+        });
+    }
+
+    var ReportExpense = function () {
+        var url = "/Expense/ExpenseSummary";
+
+        $("#expenseReportModalDiv").load(url, function () {
+            $("#expenseReportModal").modal("show");
+        })
+    }
+
+    var DeleteExpense = function (expenseID) {
+        var ans = confirm("Are you sure you want to Delete this? ");
+        if (ans) {
+            $.ajax({
+                type: "POST",
+                url: "/Expense/Delete/" + expenseID,
+                success: function () {
+                    window.location.href = "/Expense/Index";
+                }
+            })
+        }
+    }
+</script>
+
+<script>
+    $('body').on('click', "#btnSubmit", function () {
+        var myformdata = $("#expenseForm").serialize();
+
+        $.ajax({
+            type: "POST",
+            url: "/Expense/Create",
+            data: myformdata,
+            success: function () {
+                $("#myModal").modal("hide");
+                window.location.href = "/Expense/Index";
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        })
+    })
+</script>
