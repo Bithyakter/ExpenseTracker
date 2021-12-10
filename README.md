@@ -2,7 +2,7 @@
 
 ## Installation Guide
 ```
-  * After Download the Repository, Go to the Expense Tracker Folder
+  * After Download the Project, Go to the Expense Tracker Folder
   * Open the project Solution
   * In appsettings.json file, change the ConnectionStrings
   * Then update-database
